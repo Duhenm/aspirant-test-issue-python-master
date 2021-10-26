@@ -50,7 +50,7 @@ def users_list(min_age: int = Query(description="Минимальный возр
     Добавлена возможность выбора диапозона возраста
     """
     #users = Session().query(User).all()
-    users = Session().query(User).filter(User.age > min_age, User.age < max_age).all()
+    users = Session().query(User).filter(User.age >= min_age, User.age <= max_age).all()
     return [{
         'id': user.id,
         'name': user.name,
