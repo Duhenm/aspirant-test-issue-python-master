@@ -29,8 +29,15 @@ def create_city(city: str = Query(description="Название города", d
 def cities_list(q: str = Query(description="Название города", default=None)):
     """
     Получение списка городов
+    Фильтр реализован только лишь по точному совпадению (((
+    переделать, желательно поиск по части без регистра
     """
-    cities = Session().query(City).all()
+
+    if q:
+        cities = Session().query(City).filter(City.name == q).all()
+    else:
+        cities = Session().query(City).all()
+
 
     return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in cities]
 
