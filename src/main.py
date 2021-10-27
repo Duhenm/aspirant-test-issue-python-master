@@ -101,15 +101,15 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
 
 @app.get('/picnic-add/', summary='Picnic Add', tags=['picnic'])
 def picnic_add(city_id: int = None, datetime: dt.datetime = None):
-    p = Picnic(city_id=city_id, time=datetime)
+    picnic_new = Picnic(city_id=city_id, time=datetime)
     s = Session()
-    s.add(p)
+    s.add(picnic_new)
     s.commit()
 
     return {
-        'id': p.id,
-        'city': Session().query(City).filter(City.id == p.city_id).first().name,
-        'time': p.time,
+        'id': picnic_new.id,
+        'city': Session().query(City).filter(City.id == picnic_new.city_id).first().name,
+        'time': picnic_new.time,
     }
 
 
@@ -120,14 +120,14 @@ def register_to_picnic(picnic_id: int = None, user_id: int = None,):
     (Этот эндпойнт необходимо реализовать в процессе выполнения тестового задания)
     """
     # TODO: Сделать логику
-    picnic_egistr = PicnicRegistration(picnic_id=picnic_id, user_id=user_id)
+    picnic_registr = PicnicRegistration(picnic_id=picnic_id, user_id=user_id)
     s = Session()
-    s.add(picnic_egistr)
+    s.add(picnic_registr)
     s.commit()
 
 
     return {
-            'id': picnic_egistr.id,
-            'picnic': picnic_egistr.picnic.time
+            'id': picnic_registr.id,
+            'picnic': picnic_registr.picnic.time
      }
 
