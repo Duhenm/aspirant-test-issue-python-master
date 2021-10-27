@@ -26,15 +26,15 @@ def create_city(city: str = Query(description="Название города", d
 
 
 @app.post('/get-cities/', summary='Get Cities')
-def cities_list(q: str = Query(description="Название города", default=None)):
+def cities_list(query: str = Query(description="Название города", default=None)):
     """
     Получение списка городов
     Фильтр реализован только лишь по точному совпадению (((
     переделать, желательно поиск по части без регистра
     """
 
-    if q:
-        cities = Session().query(City).filter(City.name == q).all()
+    if query:
+        cities = Session().query(City).filter(City.name == query).all()
     else:
         cities = Session().query(City).all()
 
@@ -108,17 +108,26 @@ def picnic_add(city_id: int = None, datetime: dt.datetime = None):
 
     return {
         'id': p.id,
-        'city': Session().query(City).filter(City.id == p.id).first().name,
+        'city': Session().query(City).filter(City.id == p.city_id).first().name,
         'time': p.time,
     }
 
 
 @app.get('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
-def register_to_picnic(*_, **__,):
+def register_to_picnic(picnic_id: int = None, user_id: int = None,):
     """
     Регистрация пользователя на пикник
     (Этот эндпойнт необходимо реализовать в процессе выполнения тестового задания)
     """
     # TODO: Сделать логику
-    return ...
+    picnic_egistr = PicnicRegistration(picnic_id=picnic_id, user_id=user_id)
+    s = Session()
+    s.add(picnic_egistr)
+    s.commit()
+
+
+    return {
+            'id': picnic_egistr.id,
+            'picnic': picnic_egistr.picnic.time
+     }
 
