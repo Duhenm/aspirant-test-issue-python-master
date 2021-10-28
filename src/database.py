@@ -1,11 +1,21 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from external_requests import GetWeatherRequest
+from external_requests import СityList
+from os import environ
 
 # Создание сессии
-SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
-engine = create_engine(SQLALCHEMY_DATABASE_URI)
+# подключение postgres на удаленном хосте(мне так удобнее, позже переделаю на локальный)
+DB_USER = environ.get("DB_USER", "postgres")
+DB_PASSWORD = environ.get("DB_PASSWORD", "password")
+DB_HOST = environ.get("DB_HOST", "10.10.7.13")
+DB_NAME = "testcrt"
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
+)
+# SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+# SQLALCHEMY_DATABASE_URI = 'postgresql://scott:tiger@localhost/mydatabase'
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Подключение базы (с автоматической генерацией моделей)
@@ -26,7 +36,7 @@ class City(Base):
         """
         Возвращает текущую погоду в этом городе
         """
-        r = GetWeatherRequest()
+        r = СityList()
         weather = r.get_weather(self.name)
         return weather
 
