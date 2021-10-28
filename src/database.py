@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from external_requests import СityList
+from external_requests import CityList
 from os import environ
 
 # Создание сессии
@@ -36,7 +36,7 @@ class City(Base):
         """
         Возвращает текущую погоду в этом городе
         """
-        r = СityList()
+        r = CityList()
         weather = r.get_weather(self.name)
         return weather
 

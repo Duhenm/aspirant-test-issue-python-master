@@ -1,8 +1,23 @@
 import datetime as dt
 from fastapi import FastAPI, HTTPException, Query
 from database import engine, Session, Base, City, User, Picnic, PicnicRegistration
-from external_requests import  СityList
+Lj,fdktfrom external_requests import CityList
 from models import RegisterUserRequest, UserModel, PicnicRegistrationModal, PicnicModal
+from fastapi import FastAPI
+import logging
+import sys
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+fileHandler = logging.FileHandler('logs/logs.log')
+fileHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+logger.addHandler(fileHandler)
+streamHandler = logging.StreamHandler(stream=sys.stdout)
+streamHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+logger.addHandler(streamHandler)
+logging.debug('Error')
+logging.info('Information message')
+logging.warning('Warning')
 
 app = FastAPI()
 
@@ -11,7 +26,7 @@ app = FastAPI()
 def create_city(city: str = Query(description="Название города", default=None)):
     if city is None:
         raise HTTPException(status_code=400, detail='Параметр city должен быть указан')
-    check = СityList()
+    check = CityList()
     if not check.check_existing(city):
         raise HTTPException(status_code=400, detail='Параметр city должен быть существующим городом')
 
