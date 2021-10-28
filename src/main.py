@@ -1,8 +1,8 @@
 import datetime as dt
 from fastapi import FastAPI, HTTPException, Query
 from database import engine, Session, Base, City, User, Picnic, PicnicRegistration
-from external_requests import CheckCityExisting, GetWeatherRequest
-from models import RegisterUserRequest, UserModel
+from external_requests import  СityList
+from models import RegisterUserRequest, UserModel, PicnicRegistrationModal, PicnicModal
 
 app = FastAPI()
 
@@ -11,7 +11,7 @@ app = FastAPI()
 def create_city(city: str = Query(description="Название города", default=None)):
     if city is None:
         raise HTTPException(status_code=400, detail='Параметр city должен быть указан')
-    check = CheckCityExisting()
+    check = СityList()
     if not check.check_existing(city):
         raise HTTPException(status_code=400, detail='Параметр city должен быть существующим городом')
 
@@ -38,7 +38,6 @@ def cities_list(query: str = Query(description="Название города", 
     else:
         cities = Session().query(City).all()
 
-
     return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in cities]
 
 
@@ -49,7 +48,6 @@ def users_list(min_age: int = Query(description="Минимальный возр
     Список пользователей
     Добавлена возможность выбора диапозона возраста
     """
-    #users = Session().query(User).all()
     users = Session().query(User).filter(User.age >= min_age, User.age <= max_age).all()
     return [{
         'id': user.id,
@@ -86,7 +84,7 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
 
     return [{
         'id': pic.id,
-        'city': Session().query(City).filter(City.id == pic.id).first().name,
+        'city': Session().query(City).filter(City.id == pic.id).all(),
         'time': pic.time,
         'users': [
             {
@@ -100,34 +98,25 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
 
 
 @app.post('/picnic/', summary='Picnic Add', tags=['picnic'])
-def picnic_add(city_id: int = None, datetime: dt.datetime = None):
-    picnic_new = Picnic(city_id=city_id, time=datetime)
+def picnic_add(picnic: PicnicModal):
+    picnic_object = Picnic(**picnic.dict())
     s = Session()
-    s.add(picnic_new)
+    s.add(picnic_object)
     s.commit()
 
-    return {
-        'id': picnic_new.id,
-        'city': Session().query(City).filter(City.id == picnic_new.city_id).first().name,
-        'time': picnic_new.time,
-    }
+    return PicnicModal.from_orm(picnic_object)
 
 
 @app.post('/picnic/register/', summary='Picnic Registration', tags=['picnic'])
-def register_to_picnic(picnic_id: int = None, user_id: int = None,):
+def register_to_picnic(picnic: PicnicRegistrationModal):
     """
     Регистрация пользователя на пикник
     (Этот эндпойнт необходимо реализовать в процессе выполнения тестового задания)
     """
     # TODO: Сделать логику
-    picnic_registr = PicnicRegistration(picnic_id=picnic_id, user_id=user_id)
+    picnic_registr_object = PicnicRegistration(**picnic.dict())
     s = Session()
-    s.add(picnic_registr)
+    s.add(picnic_registr_object)
     s.commit()
 
-
-    return {
-            'id': picnic_registr.id,
-            'picnic': picnic_registr.picnic.time
-     }
-
+    return PicnicRegistrationModal.from_orm(picnic_registr_object)
