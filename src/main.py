@@ -1,7 +1,7 @@
 import datetime as dt
 from fastapi import FastAPI, HTTPException, Query
 from database import engine, Session, Base, City, User, Picnic, PicnicRegistration
-Lj,fdktfrom external_requests import CityList
+from external_requests import CityList
 from models import RegisterUserRequest, UserModel, PicnicRegistrationModal, PicnicModal
 from fastapi import FastAPI
 import logging
@@ -9,7 +9,7 @@ import sys
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-fileHandler = logging.FileHandler('logs/logs.log')
+fileHandler = logging.FileHandler('/logs/logs.log')
 fileHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
 logger.addHandler(fileHandler)
 streamHandler = logging.StreamHandler(stream=sys.stdout)

@@ -6,12 +6,13 @@ from os import environ
 
 # Создание сессии
 # подключение postgres на удаленном хосте(мне так удобнее, позже переделаю на локальный)
-DB_USER = environ.get("DB_USER", "postgres")
-DB_PASSWORD = environ.get("DB_PASSWORD", "password")
-DB_HOST = environ.get("DB_HOST", "10.10.7.13")
-DB_NAME = "testcrt"
+DB_USER = environ.get("DATABASE_USER", "postgres")
+DB_PASSWORD = environ.get("DATABASE_PASSWORD", "password")
+DB_HOST = environ.get("DATABASE_HOST", "postgres")
+DB_PORT = environ.get("DATABASE_PORT", "5432")
+DB_NAME = environ.get("DATABASE_NAME", "testcrt")
 SQLALCHEMY_DATABASE_URL = (
-    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
+    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
 # SQLALCHEMY_DATABASE_URI = 'postgresql://scott:tiger@localhost/mydatabase'
