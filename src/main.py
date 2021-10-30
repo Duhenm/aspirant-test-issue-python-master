@@ -8,17 +8,17 @@ from fastapi import FastAPI
 import logging
 import sys
 
-# logger = logging.getLogger()
-# logger.setLevel(logging.DEBUG)
-# fileHandler = logging.FileHandler('/logs/logs.log')
-# fileHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
-# logger.addHandler(fileHandler)
-# streamHandler = logging.StreamHandler(stream=sys.stdout)
-# streamHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
-# logger.addHandler(streamHandler)
-# logging.debug('Error')
-# logging.info('Information message')
-# logging.warning('Warning')
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+fileHandler = logging.FileHandler('/logs/logs.log')
+fileHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+logger.addHandler(fileHandler)
+streamHandler = logging.StreamHandler(stream=sys.stdout)
+streamHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+logger.addHandler(streamHandler)
+logging.debug('Error')
+logging.info('Information message')
+logging.warning('Warning')
 
 app = FastAPI()
 
