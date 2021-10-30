@@ -5,7 +5,7 @@ from external_requests import CityList
 from os import environ
 
 # Создание сессии
-# подключение postgres на удаленном хосте(мне так удобнее, позже переделаю на локальный)
+
 DB_USER = environ.get("DATABASE_USER", "postgres")
 DB_PASSWORD = environ.get("DATABASE_PASSWORD", "password")
 DB_HOST = environ.get("DATABASE_HOST", "postgres")
@@ -69,6 +69,10 @@ class Picnic(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     city_id = Column(Integer, ForeignKey('city.id'), nullable=False)
     time = Column(DateTime, nullable=False)
+    # Так удобнее вытаскивать данные
+    city = relationship('City', backref='picnics')
+
+    # registrations = relationship("PicnicRegistration", backref="picnics1")
 
     def __repr__(self):
         return f'<Пикник {self.id}>'
