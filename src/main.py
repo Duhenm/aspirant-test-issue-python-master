@@ -1,5 +1,6 @@
 import datetime as dt
 from fastapi import FastAPI, HTTPException, Query
+
 from database import engine, Session, Base, City, User, Picnic, PicnicRegistration
 from external_requests import CityList
 from models import RegisterUserRequest, UserModel, PicnicRegistrationModal, PicnicModal
@@ -7,17 +8,17 @@ from fastapi import FastAPI
 import logging
 import sys
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-fileHandler = logging.FileHandler('/logs/logs.log')
-fileHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
-logger.addHandler(fileHandler)
-streamHandler = logging.StreamHandler(stream=sys.stdout)
-streamHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
-logger.addHandler(streamHandler)
-logging.debug('Error')
-logging.info('Information message')
-logging.warning('Warning')
+# logger = logging.getLogger()
+# logger.setLevel(logging.DEBUG)
+# fileHandler = logging.FileHandler('/logs/logs.log')
+# fileHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+# logger.addHandler(fileHandler)
+# streamHandler = logging.StreamHandler(stream=sys.stdout)
+# streamHandler.setFormatter(logging.Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+# logger.addHandler(streamHandler)
+# logging.debug('Error')
+# logging.info('Information message')
+# logging.warning('Warning')
 
 app = FastAPI()
 
@@ -85,21 +86,36 @@ def register_user(user: RegisterUserRequest):
     return UserModel.from_orm(user_object)
 
 
+def filter_set(pic_id, list_in):
+    list_out = []
+    for record in list_in:
+        if record.picnic_id == pic_id:
+            list_out.append(record)
+
+    return list_out
+
+
 @app.get('/picnic/', summary='All Picnics', tags=['picnic'])
 def all_picnics(datetime: dt.datetime = Query(default=None, description='Время пикника (по умолчанию не задано)'),
                 past: bool = Query(default=True, description='Включая уже прошедшие пикники')):
     """
     Список всех пикников
     """
-    picnics = Session().query(Picnic)
+    # picnics = picnics.join(Picnic, Picnic.city_id == City.id)
+    # picnics = picnics.join(PicnicRegistration, PicnicRegistration.picnic_id == Picnic.id)
+    # picnics = Session().query(Picnic) \
+    #     .filter(Picnic.time > datetime) \
+    #     .options(joinedload(Picnic.registrations).joinedload(PicnicRegistration.user), joinedload(Picnic.city)) \
+    #     .all()
+    picnicregistr = Session().query(PicnicRegistration).all()
+    picnics = Session().query(Picnic).all()
     if datetime is not None:
-        picnics = picnics.filter(Picnic.time == datetime)
+        picnics = Session().query(Picnic).filter(Picnic.time == datetime).all()
     if not past:
-        picnics = picnics.filter(Picnic.time >= dt.datetime.now())
-
+        picnics = Session().query(Picnic).filter(Picnic.time >= dt.datetime.now()).all()
     return [{
         'id': pic.id,
-        'city': Session().query(City).filter(City.id == pic.id).all(),
+        'city': pic.city.name,
         'time': pic.time,
         'users': [
             {
@@ -108,7 +124,7 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
                 'surname': pr.user.surname,
                 'age': pr.user.age,
             }
-            for pr in Session().query(PicnicRegistration).filter(PicnicRegistration.picnic_id == pic.id)],
+            for pr in filter_set(pic.id, picnicregistr)],
     } for pic in picnics]
 
 
